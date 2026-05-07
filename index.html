@@ -23,91 +23,91 @@
         .numpad-btn { background: #161b2c; border-radius: 12px; font-weight: 900; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.03); }
         .numpad-btn:active { background: #3b82f6; color: white; }
         .active-m { background: #3b82f6 !important; color: white !important; box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
-        input::placeholder { color: #334155; }
+        .player-toggle { background: #161b2c; border: 2px solid transparent; transition: all 0.2s; cursor: pointer; }
+        .player-toggle.active { border-color: #3b82f6; background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
     </style>
 </head>
 <body>
 
-    <!-- HOME OVERLAY -->
+    <!-- HOME BUTTON -->
     <button id="home-btn" onclick="goHome()" class="fixed top-6 left-6 z-50 hidden p-3 glass">
         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
     </button>
 
     <!-- MENU SCREEN -->
     <div id="menu-screen" class="screen active">
-        <div class="text-center mb-10 mt-4">
-            <h1 class="text-4xl font-900 italic text-blue-500 tracking-tighter">DARTPRO M5</h1>
-            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em]">Autodarts Pro Connect</p>
+        <div class="text-center mb-8 mt-2">
+            <h1 class="text-3xl font-900 italic text-blue-500 tracking-tighter">DARTPRO M5</h1>
+            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-[0.4em]">AUTODARTS PRO CONNECT</p>
         </div>
 
         <!-- AUTH CONFIG -->
-        <div class="max-w-5xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-            <div class="glass p-5">
-                <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-1">Autodarts Board ID</label>
-                <input type="text" id="ad-id" placeholder="ID eingeben..." class="bg-transparent border-none text-blue-400 font-bold text-lg w-full outline-none">
+        <div class="max-w-5xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="glass p-4">
+                <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest block mb-1">AUTODARTS BOARD ID</label>
+                <input type="text" id="ad-id" placeholder="Board ID eingeben..." class="bg-transparent border-none text-blue-400 font-bold text-sm w-full outline-none">
             </div>
-            <div class="glass p-5 flex items-center gap-4">
+            <div class="glass p-4 flex items-center gap-4">
                 <div class="flex-1">
-                    <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-1">API Key (Personal Access Token)</label>
-                    <input type="password" id="ad-key" placeholder="••••••••••••••••" class="bg-transparent border-none text-blue-400 font-bold text-lg w-full outline-none">
+                    <label class="text-[8px] font-black text-slate-500 uppercase tracking-widest block mb-1">API KEY (TOKEN)</label>
+                    <input type="password" id="ad-key" placeholder="API Key eingeben..." class="bg-transparent border-none text-blue-400 font-bold text-sm w-full outline-none">
                 </div>
-                <button onclick="saveAndConnect()" class="bg-blue-600 px-6 py-3 rounded-xl font-900 text-xs uppercase shadow-lg shadow-blue-900/40 active:scale-95 transition-transform">Connect</button>
+                <button onclick="saveAndConnect()" class="bg-blue-600 px-6 py-3 rounded-xl font-900 text-[10px] uppercase shadow-lg active:scale-95 transition-transform">CONNECT</button>
+            </div>
+        </div>
+
+        <!-- PLAYER SELECTION -->
+        <div class="max-w-3xl mx-auto w-full glass p-6 mb-8 text-center">
+            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">SPIELER ANZAHL</span>
+            <div class="flex justify-center gap-3">
+                <button onclick="setPlayers(1)" id="p1" class="player-toggle active w-14 h-14 rounded-2xl font-bold text-xl">1</button>
+                <button onclick="setPlayers(2)" id="p2" class="player-toggle w-14 h-14 rounded-2xl font-bold text-xl">2</button>
+                <button onclick="setPlayers(3)" id="p3" class="player-toggle w-14 h-14 rounded-2xl font-bold text-xl">3</button>
+                <button onclick="setPlayers(4)" id="p4" class="player-toggle w-14 h-14 rounded-2xl font-bold text-xl">4</button>
+            </div>
+            <div class="mt-6 flex justify-center">
+                <input type="text" id="player-name" value="Ich" class="bg-slate-900/50 border-none rounded-xl px-4 py-3 text-sm text-slate-300 w-full max-w-xs text-center outline-none">
             </div>
         </div>
 
         <!-- MODE GRID -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto w-full pb-20 px-4">
-            <!-- X01 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto w-full px-4 pb-12">
             <div class="btn-mode border-l-4 border-blue-600">
-                <div class="flex justify-between items-center w-full">
-                    <div>
-                        <h2 class="text-xl font-900 uppercase">X01 Match</h2>
-                        <p class="text-slate-500 text-[10px] mt-1">Double-Out Leg Modus mit Checkout-Pfad.</p>
-                    </div>
-                </div>
-                <div class="flex gap-2 mt-4">
-                    <select id="x01-sel" class="bg-slate-900 border-none rounded-lg px-3 font-bold text-blue-400 outline-none">
+                <h2 class="text-xl font-900 uppercase">X01 MATCH</h2>
+                <p class="text-slate-500 text-[10px] mt-1 mb-4">Double-Out Leg Modus mit Checkout-Pfad.</p>
+                <div class="flex gap-2">
+                    <select id="x01-sel" class="bg-slate-900 border-none rounded-lg px-3 font-bold text-blue-400 outline-none text-xs">
                         <option>301</option><option selected>501</option><option>701</option>
                     </select>
-                    <button onclick="start('x01')" class="flex-1 bg-blue-600 rounded-xl font-900 text-xs uppercase py-3 shadow-lg">Start</button>
+                    <button onclick="start('x01')" class="flex-1 bg-blue-600 rounded-xl font-900 text-[10px] uppercase py-3 shadow-lg">START</button>
                 </div>
             </div>
-
-            <!-- LADDER -->
             <div onclick="start('ladder')" class="btn-mode border-l-4 border-amber-500">
-                <h2 class="text-xl font-900 uppercase text-amber-500">Ladder 50</h2>
-                <p class="text-slate-500 text-[10px] mt-1">Double-Out Training (+5/-1).</p>
+                <h2 class="text-xl font-900 uppercase text-amber-500">LADDER 50</h2>
+                <p class="text-slate-500 text-[10px] mt-1">Double-Out Training (+5/-1)</p>
             </div>
-
-            <!-- CLOCK -->
             <div onclick="start('atc')" class="btn-mode border-l-4 border-emerald-500">
-                <h2 class="text-xl font-900 uppercase text-emerald-500">Around Clock</h2>
-                <p class="text-slate-500 text-[10px] mt-1">Treffe 1 bis Bull nacheinander.</p>
+                <h2 class="text-xl font-900 uppercase text-emerald-500">AROUND CLOCK</h2>
+                <p class="text-slate-500 text-[10px] mt-1">Treffe 1 bis Bull nacheinander</p>
             </div>
-
-            <!-- BOB'S 27 -->
             <div onclick="start('bob27')" class="btn-mode border-l-4 border-rose-500">
-                <h2 class="text-xl font-900 uppercase text-rose-500">Bob's 27</h2>
-                <p class="text-slate-500 text-[10px] mt-1">Double Survival Training.</p>
+                <h2 class="text-xl font-900 uppercase text-rose-500">BOB'S 27</h2>
+                <p class="text-slate-500 text-[10px] mt-1">Double Survival Training</p>
             </div>
-
-            <!-- CRICKET -->
             <div onclick="start('cricket')" class="btn-mode border-l-4 border-violet-500">
-                <h2 class="text-xl font-900 uppercase text-violet-500">Cricket</h2>
-                <p class="text-slate-500 text-[10px] mt-1">Taktik: Score 15-20 & Bull.</p>
+                <h2 class="text-xl font-900 uppercase text-violet-500">CRICKET</h2>
+                <p class="text-slate-500 text-[10px] mt-1">Taktik: 15-20 & Bull</p>
             </div>
-
-            <!-- 100 DARTS -->
             <div onclick="start('score')" class="btn-mode border-l-4 border-cyan-500">
-                <h2 class="text-xl font-900 uppercase text-cyan-500">100 Darts</h2>
-                <p class="text-slate-500 text-[10px] mt-1">Scoring Average Training.</p>
+                <h2 class="text-xl font-900 uppercase text-cyan-500">100 DARTS</h2>
+                <p class="text-slate-500 text-[10px] mt-1">Highscore & Average Training</p>
             </div>
         </div>
         
-        <div class="fixed bottom-6 left-1/2 -translate-x-1/2">
-            <div id="status-bar" class="glass px-4 py-2 text-[9px] font-black uppercase flex items-center gap-2 opacity-50">
+        <div class="fixed bottom-6 left-6">
+            <div id="status-bar" class="glass px-3 py-2 text-[9px] font-black uppercase flex items-center gap-2">
                 <div id="status-dot" class="w-2 h-2 rounded-full bg-slate-600"></div>
-                Autodarts: <span id="status-text">Offline</span>
+                AUTODARTS: <span id="status-text">OFFLINE</span>
             </div>
         </div>
     </div>
@@ -116,40 +116,38 @@
     <div id="game-screen" class="screen">
         <div class="flex justify-center mb-8">
             <div class="glass px-12 py-3 border-b-4 border-blue-600 text-center">
-                <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Ich</div>
-                <div id="p-score-sub" class="text-2xl font-900 text-white">501</div>
+                <div id="current-player-label" class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Ich</div>
+                <div id="p-score-sub" class="text-3xl font-900 text-white">501</div>
             </div>
         </div>
 
-        <div class="flex-1 grid grid-cols-12 gap-6 max-w-7xl mx-auto w-full">
-            <!-- Left: Big Display -->
+        <div class="flex-1 grid grid-cols-12 gap-8 max-w-7xl mx-auto w-full">
             <div class="col-span-12 lg:col-span-5 flex flex-col gap-4">
                 <div class="glass flex-1 flex flex-col items-center justify-center relative p-10">
                     <div id="game-label" class="absolute top-12 text-[10px] font-black text-slate-500 uppercase tracking-[0.5em]">Remaining</div>
                     <div id="main-score" class="text-[160px] font-900 leading-none tracking-tighter text-white">501</div>
-                    <div id="checkout-path" class="mt-6 text-blue-400 font-bold text-xl uppercase h-8"></div>
+                    <div id="checkout-path" class="mt-6 text-blue-400 font-bold text-2xl uppercase h-8"></div>
                     <div id="cricket-grid" class="w-full mt-6 grid grid-cols-7 gap-2 hidden"></div>
                 </div>
             </div>
 
-            <!-- Right: Numpad & Controls -->
             <div class="col-span-12 lg:col-span-7 flex flex-col gap-4">
                 <div class="grid grid-cols-3 gap-3">
                     <button onclick="setM('S')" id="m-S" class="numpad-btn h-14 active-m">SINGLE</button>
                     <button onclick="setM('D')" id="m-D" class="numpad-btn h-14">DOUBLE</button>
                     <button onclick="setM('T')" id="m-T" class="numpad-btn h-14">TRIPLE</button>
                 </div>
-                <div class="grid grid-cols-5 gap-2.5 flex-1">
+                <div class="grid grid-cols-5 gap-3 flex-1">
                     <script>
-                        for(let i=1; i<=20; i++) document.write(`<button onclick="hit(${i})" class="numpad-btn text-xl">${i}</button>`);
+                        for(let i=1; i<=20; i++) document.write(`<button onclick="hit(${i})" class="numpad-btn text-2xl">${i}</button>`);
                     </script>
                     <button onclick="hit(25)" class="numpad-btn bg-rose-600/10 text-rose-500">BULL</button>
-                    <button onclick="hit(0)" class="numpad-btn bg-slate-800/40 text-slate-500">0</button>
-                    <button onclick="undo()" class="numpad-btn text-[10px] uppercase text-slate-400">Undo</button>
-                    <button onclick="confirmTurn()" class="numpad-btn col-span-2 bg-blue-600 text-white font-900 text-2xl shadow-xl shadow-blue-900/40">OK</button>
+                    <button onclick="hit(0)" class="numpad-btn bg-slate-800/40 text-slate-500 text-xl">0</button>
+                    <button onclick="undo()" class="numpad-btn text-xs uppercase text-slate-400">Undo</button>
+                    <button onclick="confirmTurn()" class="numpad-btn col-span-2 bg-blue-600 text-white font-900 text-3xl shadow-xl shadow-blue-900/40">OK</button>
                 </div>
                 <div class="h-24 glass flex items-center justify-around">
-                    <div class="flex gap-12 text-3xl font-900 tracking-tighter">
+                    <div class="flex gap-16 text-4xl font-900">
                         <span id="d1" class="text-slate-800">---</span>
                         <span id="d2" class="text-slate-800">---</span>
                         <span id="d3" class="text-slate-800">---</span>
@@ -161,10 +159,10 @@
 
     <script>
         let state = {
-            mode: '', score: 0, mult: 'S', turn: [], target: 1, darts: 0, cricket: {}, ws: null
+            players: 1, activePlayer: 0,
+            mode: '', scores: [501, 501, 501, 501], mult: 'S', turn: [], target: 1, darts: 0, cricket: [{},{},{},{}], ws: null
         };
 
-        // LocalStorage zum Merken der Login-Daten
         window.onload = () => {
             const savedId = localStorage.getItem('ad_id');
             const savedKey = localStorage.getItem('ad_key');
@@ -173,60 +171,66 @@
             if(savedId && savedKey) connectAD(savedId, savedKey);
         };
 
+        function setPlayers(n) {
+            state.players = n;
+            for(let i=1; i<=4; i++) document.getElementById('p'+i).classList.toggle('active', i === n);
+        }
+
         function saveAndConnect() {
             const id = document.getElementById('ad-id').value.trim();
             const key = document.getElementById('ad-key').value.trim();
+            if(!id || !key) return;
             localStorage.setItem('ad_id', id);
             localStorage.setItem('ad_key', key);
             connectAD(id, key);
         }
 
         function connectAD(id, key) {
-            if(!id || !key) return;
             if(state.ws) state.ws.close();
-
-            // Offizieller WebSocket Endpunkt
+            
+            // Die URL sagt dem Browser, dass er sich mit Autodarts verbinden soll
             state.ws = new WebSocket(`wss://api.autodarts.io/ms/v1/boards/${id}/state?access_token=${key}`);
 
             state.ws.onopen = () => {
-                document.getElementById('status-dot').className = 'w-2 h-2 rounded-full bg-green-500 animate-pulse';
-                document.getElementById('status-text').innerText = 'Connected';
-                document.getElementById('status-bar').style.opacity = "1";
+                document.getElementById('status-dot').className = 'w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]';
+                document.getElementById('status-text').innerText = 'CONNECTED';
+                document.getElementById('status-text').className = 'text-green-500';
             };
 
             state.ws.onmessage = (e) => {
                 const data = JSON.parse(e.data);
+                // Autodarts sendet "darts-thrown" wenn ein Pfeil steckt
                 if(data.event === 'darts-thrown' && data.dart) {
                     const d = data.dart;
                     const m = d.multiplier === 2 ? 'D' : (d.multiplier === 3 ? 'T' : 'S');
                     setM(m);
                     hit(d.value);
                 }
+                // Autodarts sendet "next-turn" wenn die Pfeile aus dem Board gezogen werden
                 if(data.event === 'next-turn' && state.turn.length > 0) confirmTurn();
             };
 
             state.ws.onclose = () => {
                 document.getElementById('status-dot').className = 'w-2 h-2 rounded-full bg-slate-600';
-                document.getElementById('status-text').innerText = 'Offline';
+                document.getElementById('status-text').innerText = 'OFFLINE';
+                document.getElementById('status-text').className = '';
+                // Automatischer Reconnect nach 5 Sekunden
+                setTimeout(() => connectAD(localStorage.getItem('ad_id'), localStorage.getItem('ad_key')), 5000);
             };
         }
 
-        function goHome() {
-            document.getElementById('game-screen').classList.remove('active');
-            document.getElementById('menu-screen').classList.add('active');
-            document.getElementById('home-btn').classList.add('hidden');
-        }
-
         function start(m) {
-            state.mode = m; state.turn = []; state.mult = 'S'; state.darts = 0;
-            const xVal = parseInt(document.getElementById('x01-sel').value);
+            state.mode = m; state.turn = []; state.mult = 'S'; state.activePlayer = 0;
+            const x01Val = parseInt(document.getElementById('x01-sel').value);
 
-            if(m === 'x01') state.score = xVal;
-            if(m === 'ladder') state.score = 50;
-            if(m === 'bob27') { state.score = 27; state.target = 1; }
-            if(m === 'atc') state.target = 1;
-            if(m === 'cricket') { state.score = 0; [20,19,18,17,16,15,25].forEach(v => state.cricket[v] = 0); }
-            if(m === 'score') state.score = 0;
+            for(let i=0; i<4; i++) {
+                if(m === 'x01') state.scores[i] = x01Val;
+                if(m === 'ladder') state.scores[i] = 50;
+                if(m === 'bob27') state.scores[i] = 27;
+                if(m === 'cricket') { state.scores[i] = 0; [20,19,18,17,16,15,25].forEach(v => state.cricket[i][v] = 0); }
+                if(m === 'score') state.scores[i] = 0;
+            }
+            state.target = 1;
 
             document.getElementById('menu-screen').classList.remove('active');
             document.getElementById('game-screen').classList.add('active');
@@ -264,60 +268,55 @@
         function confirmTurn() {
             if(state.turn.length === 0) return;
             const sum = state.turn.reduce((a,b) => a + b.val, 0);
+            const idx = state.activePlayer;
 
             if(state.mode === 'x01') {
-                const rem = state.score - sum;
-                if(rem === 0 && state.turn[state.turn.length-1].mult === 'D') { alert("MATCH WON!"); goHome(); return; }
-                if(rem >= 2) state.score = rem;
-            } else if(state.mode === 'ladder') {
-                let win = false; let cur = state.score;
-                state.turn.forEach(d => { cur -= d.val; if(cur === 0 && d.mult === 'D') win = true; });
-                state.score = win ? state.score + 5 : Math.max(2, state.score - 1);
+                const rem = state.scores[idx] - sum;
+                if(rem === 0 && state.turn[state.turn.length-1].mult === 'D') { alert("MATCH GEWONNEN!"); goHome(); return; }
+                if(rem >= 2) state.scores[idx] = rem;
             } else if(state.mode === 'bob27') {
-                const hits = state.turn.filter(d => d.num === state.target && d.mult === 'D').length;
-                state.score += hits > 0 ? (hits * state.target * 2) : -(state.target * 2);
-                state.target = state.target === 20 ? 25 : state.target + 1;
-                if(state.score <= 0) { alert("Game Over!"); goHome(); return; }
+                const doubles = state.turn.filter(d => d.num === state.target && d.mult === 'D').length;
+                state.scores[idx] += doubles > 0 ? (doubles * state.target * 2) : -(state.target * 2);
+                if(state.scores[idx] <= 0) { alert("GAME OVER!"); goHome(); return; }
             } else if(state.mode === 'atc') {
                 state.turn.forEach(d => { if(d.num === state.target) state.target++; });
-            } else if(state.mode === 'cricket') {
-                state.turn.forEach(d => {
-                    if(state.cricket[d.num] !== undefined) {
-                        let count = d.mult === 'T' ? 3 : (d.mult === 'D' ? 2 : 1);
-                        for(let i=0; i<count; i++) { if(state.cricket[d.num] < 3) state.cricket[d.num]++; else state.score += d.num; }
-                    }
-                });
-            } else if(state.mode === 'score') { state.score += sum; }
+            } else if(state.mode === 'score') {
+                state.scores[idx] += sum;
+            }
+
+            state.activePlayer = (state.activePlayer + 1) % state.players;
+            if(state.activePlayer === 0 && state.mode === 'bob27') {
+                state.target = state.target === 20 ? 25 : state.target + 1;
+            }
 
             state.turn = [];
             updatePreview();
             render();
         }
 
+        function goHome() {
+            document.getElementById('game-screen').classList.remove('active');
+            document.getElementById('menu-screen').classList.add('active');
+            document.getElementById('home-btn').classList.add('hidden');
+        }
+
         function render() {
             const mv = document.getElementById('main-score');
             const sub = document.getElementById('p-score-sub');
             const lbl = document.getElementById('game-label');
-            const cg = document.getElementById('cricket-grid');
-            
-            cg.classList.add('hidden');
+            const cp = document.getElementById('current-player-label');
+            const idx = state.activePlayer;
+
+            cp.innerText = idx === 0 ? document.getElementById('player-name').value : "Spieler " + (idx+1);
+
             if(state.mode === 'x01') {
-                mv.innerText = state.score; sub.innerText = state.score; lbl.innerText = "Remaining";
-            } else if(state.mode === 'ladder') {
-                mv.innerText = state.score; sub.innerText = "LADDER"; lbl.innerText = "Target Score (D-Out)";
+                mv.innerText = state.scores[idx]; sub.innerText = state.scores[idx]; lbl.innerText = "Remaining";
             } else if(state.mode === 'bob27') {
-                mv.innerText = state.target === 25 ? "D-BULL" : "D"+state.target; sub.innerText = "Score: " + state.score; lbl.innerText = "Double Target";
+                mv.innerText = state.target === 25 ? "D-BULL" : "D"+state.target; sub.innerText = "Score: " + state.scores[idx]; lbl.innerText = "Double Target";
             } else if(state.mode === 'atc') {
                 mv.innerText = state.target === 25 ? "BULL" : state.target; sub.innerText = "ATC"; lbl.innerText = "Next Number";
-            } else if(state.mode === 'cricket') {
-                mv.innerText = state.score; sub.innerText = "Cricket"; lbl.innerText = "Points";
-                cg.classList.remove('hidden'); cg.innerHTML = '';
-                [20,19,18,17,16,15,25].forEach(v => {
-                    const h = state.cricket[v]; const s = h>=3 ? '✕' : (h===2 ? 'X' : (h===1 ? '/' : ''));
-                    cg.innerHTML += `<div class="glass p-1 text-center"><div class="text-[8px] text-slate-500">${v==25?'B':v}</div><div class="text-lg font-black">${s||'-'}</div></div>`;
-                });
             } else if(state.mode === 'score') {
-                mv.innerText = state.score; sub.innerText = "Total"; lbl.innerText = "Score Sum";
+                mv.innerText = state.scores[idx]; sub.innerText = "Total"; lbl.innerText = "Summe";
             }
         }
     </script>
