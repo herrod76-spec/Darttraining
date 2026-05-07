@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>HenryKapelly | DART SYSTEM</title>
+    <title>HenryKapelly | DART OS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
@@ -12,7 +12,7 @@
             margin: 0; height: 100vh; width: 100vw; overflow: hidden; display: flex;
         }
         
-        /* Sidebar Styles */
+        /* Sidebar */
         .sidebar { 
             width: 80px; background: #0d111d; border-right: 1px solid rgba(255,255,255,0.05); 
             display: flex; flex-direction: column; align-items: center; padding: 1.5rem 0; 
@@ -25,358 +25,229 @@
             gap: 1.25rem; color: #64748b; cursor: pointer; transition: all 0.2s; 
             white-space: nowrap; overflow: hidden;
         }
-        .nav-item:hover { color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
         .nav-item.active { color: #3b82f6; border-right: 4px solid #3b82f6; background: rgba(59, 130, 246, 0.1); }
         .nav-label { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; opacity: 0; transition: opacity 0.2s; }
         .sidebar.expanded .nav-label { opacity: 1; }
 
-        /* Main Layout */
         .content { flex: 1; height: 100vh; overflow-y: auto; background: radial-gradient(circle at top right, #0f172a, #05070f); position: relative; }
         .view { display: none; padding: 60px 40px; min-height: 100%; }
         .view.active { display: block; }
         
         .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; }
         
-        /* Dash Tiles */
-        .dash-tile { 
-            background: #0d111d; border: 1px solid rgba(255,255,255,0.05); border-radius: 32px; 
-            padding: 4rem 2rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            cursor: pointer; display: flex; flex-direction: column; align-items: center; text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
-        .dash-tile:hover { transform: translateY(-5px); background: #161b2c; border-color: #3b82f6; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-        .dash-tile svg { margin-bottom: 1.5rem; color: #3b82f6; }
+        /* Status Dot */
+        .status-indicator { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.3); padding: 8px 16px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.05); }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 10px #ef4444; transition: all 0.3s; }
+        .dot.online { background: #10b981; box-shadow: 0 0 10px #10b981; }
 
-        .game-card { background: #0d111d; border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 2rem; transition: all 0.2s; cursor: pointer; border-left: 4px solid transparent; }
-        .game-card:hover { transform: scale(1.02); background: #161b2c; border-color: rgba(255,255,255,0.1); }
-        
-        /* Game UI */
-        .numpad-btn { background: rgba(30, 41, 59, 0.5); border-radius: 16px; font-weight: 900; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.03); transition: all 0.1s; }
-        .numpad-btn:active { background: #3b82f6; transform: scale(0.92); }
-        .active-m { background: #3b82f6 !important; color: white !important; }
+        .numpad-btn { background: rgba(30, 41, 59, 0.5); border-radius: 16px; font-weight: 900; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.03); }
     </style>
 </head>
 <body>
 
-    <!-- SIDE NAVIGATION -->
     <nav class="sidebar" id="mainSidebar">
         <div class="mb-10 cursor-pointer" onclick="toggleSidebar()">
-            <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center font-900 italic text-xl shadow-lg shadow-blue-900/40">HK</div>
+            <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center font-900 italic text-xl">HK</div>
         </div>
-        
-        <div onclick="showView('dash')" id="nav-dash" class="nav-item active">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-            <span class="nav-label">Dashboard</span>
-        </div>
-
-        <div onclick="showView('stats')" id="nav-stats" class="nav-item">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-            <span class="nav-label">Statistiken</span>
-        </div>
-        
-        <div onclick="showView('config')" id="nav-config" class="nav-item mt-auto">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
-            <span class="nav-label">Setup</span>
-        </div>
+        <div onclick="showView('dash')" id="nav-dash" class="nav-item active"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg><span class="nav-label">Dashboard</span></div>
+        <div onclick="showView('config')" id="nav-config" class="nav-item mt-auto"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span class="nav-label">Setup</span></div>
     </nav>
 
     <main class="content">
+        <!-- HEADER MIT STATUS -->
+        <div class="absolute top-10 right-10 z-50">
+            <div class="status-indicator">
+                <div id="status-dot" class="dot"></div>
+                <span id="status-text" class="text-[10px] font-black uppercase tracking-widest text-slate-400">Offline</span>
+            </div>
+        </div>
 
-        <!-- VIEW: MAIN DASHBOARD -->
+        <!-- VIEW: DASHBOARD -->
         <div id="view-dash" class="view active">
             <header class="mb-20">
                 <h1 class="text-7xl font-900 tracking-tighter uppercase text-white mb-2">HenryKapelly</h1>
                 <p class="text-blue-500 text-sm font-black tracking-[0.5em] uppercase">Dart Performance OS</p>
             </header>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-7xl">
-                <!-- Lobby Tile -->
-                <div onclick="showView('lobby')" class="dash-tile">
-                    <svg width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                    <h2 class="text-4xl font-900 mb-2 italic">GAME LOBBY</h2>
-                    <p class="text-slate-500 text-sm font-medium tracking-wide">Kompetitive Modi: X01, Cricket, Shanghai...</p>
-                </div>
-                <!-- Training Tile -->
-                <div onclick="showView('training')" class="dash-tile">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl">
+                <div onclick="startGame('ladder')" class="dash-tile">
                     <svg width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    <h2 class="text-4xl font-900 mb-2 italic">TRAINING</h2>
-                    <p class="text-slate-500 text-sm font-medium tracking-wide">Skill-Games: Ladder, Bob's 27, ATC...</p>
+                    <h2 class="text-4xl font-900 mb-2 italic">LADDER 50</h2>
+                    <p class="text-slate-500 text-sm font-medium">Auto-Detection via 192.168.0.97</p>
                 </div>
-                <!-- Setup Tile -->
                 <div onclick="showView('config')" class="dash-tile">
-                    <svg width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    <h2 class="text-4xl font-900 mb-2 italic">SETUP</h2>
-                    <p class="text-slate-500 text-sm font-medium tracking-wide">Autodarts Hardware & Verbindung</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- VIEW: GAME LOBBY (Competitive) -->
-        <div id="view-lobby" class="view">
-            <button onclick="showView('dash')" class="mb-12 text-blue-500 font-black flex items-center gap-2 hover:translate-x-[-4px] transition-transform uppercase tracking-widest text-xs">← Dashboard</button>
-            <h2 class="text-5xl font-900 mb-10 uppercase italic tracking-tighter text-white">Kompetitive Matches</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl">
-                <div onclick="startGame('x01')" class="game-card border-blue-600">
-                    <h3 class="text-3xl font-900 text-blue-400">501 / 301</h3>
-                    <p class="text-slate-400 text-sm mt-2">Klassisches Leg-Modus Format (Double Out).</p>
-                </div>
-                <div onclick="startGame('cricket')" class="game-card border-violet-600">
-                    <h3 class="text-3xl font-900 text-violet-500">CRICKET</h3>
-                    <p class="text-slate-400 text-sm mt-2">Strategie-Duell auf 15-20 und Bull.</p>
-                </div>
-                <div onclick="startGame('shanghai')" class="game-card border-amber-600">
-                    <h3 class="text-3xl font-900 text-amber-500">SHANGHAI</h3>
-                    <p class="text-slate-400 text-sm mt-2">Präzisions-Wettkampf durch alle Zahlen.</p>
-                </div>
-                <div onclick="startGame('halveit')" class="game-card border-rose-600">
-                    <h3 class="text-3xl font-900 text-rose-500">HALVE IT</h3>
-                    <p class="text-slate-400 text-sm mt-2">Kein Treffer bedeutet Punktabzug.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- VIEW: TRAINING -->
-        <div id="view-training" class="view">
-            <button onclick="showView('dash')" class="mb-12 text-blue-500 font-black flex items-center gap-2 hover:translate-x-[-4px] transition-transform uppercase tracking-widest text-xs">← Dashboard</button>
-            <h2 class="text-5xl font-900 mb-10 uppercase italic tracking-tighter text-white">Training Center</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl">
-                <div onclick="startGame('ladder')" class="game-card border-amber-500">
-                    <h3 class="text-3xl font-900 text-amber-500">LADDER 50</h3>
-                    <p class="text-slate-400 text-sm mt-2">Checkouts trainieren: Progressiv steigend.</p>
-                </div>
-                <div onclick="startGame('bob27')" class="game-card border-rose-500">
-                    <h3 class="text-3xl font-900 text-rose-500">BOB'S 27</h3>
-                    <p class="text-slate-400 text-sm mt-2">Der Überlebenskampf auf die Doppelfelder.</p>
-                </div>
-                <div onclick="startGame('atc')" class="game-card border-emerald-500">
-                    <h3 class="text-3xl font-900 text-emerald-500">AROUND CLOCK</h3>
-                    <p class="text-slate-400 text-sm mt-2">Einfach um die Uhr, Double oder Triple.</p>
-                </div>
-                <div onclick="startGame('score')" class="game-card border-cyan-500">
-                    <h3 class="text-3xl font-900 text-cyan-500">SCORING 100</h3>
-                    <p class="text-slate-400 text-sm mt-2">Fokus auf 100 Darts für den Average.</p>
+                    <svg width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                    <h2 class="text-4xl font-900 mb-2 italic">SYSTEM</h2>
+                    <p class="text-slate-500 text-sm font-medium italic">Ubuntu 24.04 (Autodarts)</p>
                 </div>
             </div>
         </div>
 
         <!-- VIEW: GAME INTERFACE -->
         <div id="view-game" class="view">
-            <div class="grid grid-cols-12 gap-8 max-w-7xl mx-auto h-[85vh]">
-                <!-- Score Display -->
-                <div class="col-span-5 flex flex-col gap-6">
-                    <div class="glass flex-1 flex flex-col items-center justify-center relative p-12 overflow-hidden">
-                        <div id="game-title" class="absolute top-10 text-[10px] font-black text-blue-500 uppercase tracking-[0.8em]">---</div>
-                        <div id="main-display" class="text-[240px] font-900 leading-none text-white tracking-tighter">0</div>
-                        <div id="sub-display" class="mt-8 text-slate-400 font-black text-4xl uppercase tracking-widest">---</div>
+            <div class="grid grid-cols-12 gap-8 max-w-7xl mx-auto h-[80vh]">
+                <div class="col-span-6 flex flex-col">
+                    <div class="glass flex-1 flex flex-col items-center justify-center relative">
+                        <div id="game-title" class="absolute top-10 text-[10px] font-black text-blue-500 uppercase tracking-[0.8em]">LADDER 50</div>
+                        <div id="main-display" class="text-[200px] font-900 leading-none text-white tracking-tighter">50</div>
+                        <div id="sub-display" class="mt-4 text-slate-400 font-black text-3xl uppercase tracking-widest">Target Checkout</div>
                     </div>
                 </div>
-
-                <!-- Input Board -->
-                <div class="col-span-7 flex flex-col gap-4">
-                    <div class="grid grid-cols-3 gap-4">
-                        <button onclick="setM('S')" id="m-S" class="numpad-btn h-20 active-m text-lg">SINGLE</button>
-                        <button onclick="setM('D')" id="m-D" class="numpad-btn h-20 text-lg">DOUBLE</button>
-                        <button onclick="setM('T')" id="m-T" class="numpad-btn h-20 text-lg">TRIPLE</button>
+                <div class="col-span-6 flex flex-col gap-4">
+                    <div class="grid grid-cols-3 gap-3 h-24">
+                        <div id="d1" class="glass flex items-center justify-center text-4xl font-900 text-slate-800">---</div>
+                        <div id="d2" class="glass flex items-center justify-center text-4xl font-900 text-slate-800">---</div>
+                        <div id="d3" class="glass flex items-center justify-center text-4xl font-900 text-slate-800">---</div>
                     </div>
-                    <div class="grid grid-cols-5 gap-3 flex-1">
-                        <script>
-                            for(let i=1; i<=20; i++) document.write(`<button onclick="hit(${i})" class="numpad-btn text-4xl font-900">${i}</button>`);
-                        </script>
-                        <button onclick="hit(25)" class="numpad-btn bg-rose-600/10 text-rose-500 text-2xl">BULL</button>
-                        <button onclick="hit(0)" class="numpad-btn bg-slate-800/40 text-slate-500 text-xl">MISS</button>
-                        <button onclick="undo()" class="numpad-btn text-[10px] uppercase text-slate-500">Undo</button>
-                        <button onclick="confirmTurn()" class="numpad-btn col-span-2 bg-blue-600 text-white font-900 text-6xl shadow-xl shadow-blue-900/40">OK</button>
-                    </div>
-                    <!-- Turn Preview -->
-                    <div class="h-32 glass flex items-center justify-around text-6xl font-900">
-                        <span id="d1" class="text-slate-800">---</span>
-                        <span id="d2" class="text-slate-800">---</span>
-                        <span id="d3" class="text-slate-800">---</span>
+                    <div class="flex-1 glass p-8 flex flex-col items-center justify-center text-center">
+                        <div id="detection-info" class="mb-6">
+                            <p class="text-blue-500 font-black uppercase text-xs tracking-widest">Warte auf Dart-Erkennung...</p>
+                            <p class="text-slate-600 text-[10px] mt-1 italic">Connected to autodarts (192.168.0.97:3180)</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <button onclick="confirmTurn()" class="px-10 py-6 bg-blue-600 rounded-2xl font-900 text-2xl shadow-xl hover:bg-blue-500 transition-all">NEXT ROUND</button>
+                            <button onclick="undo()" class="px-8 py-6 bg-slate-800 rounded-2xl font-900 text-sm uppercase">Undo</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- VIEW: CONFIG/SETUP -->
+        <!-- VIEW: CONFIG -->
         <div id="view-config" class="view">
-            <button onclick="showView('dash')" class="mb-12 text-blue-500 font-black flex items-center gap-2 hover:translate-x-[-4px] transition-transform uppercase tracking-widest text-xs">← Dashboard</button>
-            <div class="max-w-4xl glass p-16">
-                <h2 class="text-5xl font-900 mb-10 italic uppercase tracking-tighter">Hardware Setup</h2>
-                <div class="space-y-8">
-                    <div class="group">
-                        <label class="text-[11px] font-black text-slate-500 uppercase mb-3 block tracking-widest group-focus-within:text-blue-500 transition-colors">Autodarts Board UUID</label>
-                        <input type="text" id="cfg-id" placeholder="ID eingeben..." class="w-full bg-[#05070f] p-6 rounded-2xl text-blue-400 font-bold text-2xl outline-none border border-slate-800 focus:border-blue-500 transition-all">
-                    </div>
-                    <div>
-                        <label class="text-[11px] font-black text-slate-500 uppercase mb-3 block tracking-widest">Personal Access Token</label>
-                        <input type="password" id="cfg-key" placeholder="API Key hier einfügen..." class="w-full bg-[#05070f] p-6 rounded-2xl text-blue-400 font-bold text-2xl outline-none border border-slate-800 focus:border-blue-500 transition-all">
-                    </div>
-                    <div class="flex gap-4 pt-6">
-                        <button onclick="saveCfg()" class="flex-1 bg-blue-600 hover:bg-blue-500 py-7 rounded-2xl font-900 uppercase text-sm tracking-[0.2em] shadow-2xl transition-all">Verbindung Speichern</button>
-                    </div>
+            <button onclick="showView('dash')" class="mb-12 text-blue-500 font-black uppercase text-xs tracking-widest">← Back</button>
+            <div class="max-w-2xl glass p-12">
+                <h2 class="text-4xl font-900 mb-8 italic uppercase tracking-tighter">System Info</h2>
+                <div class="space-y-4 text-sm font-bold uppercase tracking-wider">
+                    <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-slate-500">Host IP</span><span class="text-blue-400">192.168.0.97</span></div>
+                    <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-slate-500">Platform</span><span class="text-white">Ubuntu 24.04</span></div>
+                    <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-slate-500">API Port</span><span class="text-white">3180 / 3181</span></div>
+                    <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-slate-500">Cams</span><span class="text-emerald-500">3 Online</span></div>
                 </div>
+                <button onclick="connectHardware()" class="w-full mt-10 bg-blue-600 py-5 rounded-xl font-900 uppercase text-xs tracking-widest">Reconnect WebSocket</button>
             </div>
         </div>
-
-        <!-- VIEW: STATS -->
-        <div id="view-stats" class="view">
-             <header class="mb-12">
-                <h1 class="text-6xl font-900 tracking-tighter uppercase">Analyse</h1>
-                <p class="text-blue-500 text-xs tracking-[0.5em] font-black">Performance Dashboard</p>
-            </header>
-            <div class="grid grid-cols-3 gap-8 mb-10">
-                <div class="glass p-10">
-                    <span class="text-[10px] font-black text-slate-500 uppercase block mb-2 tracking-widest">Gesamt Darts</span>
-                    <div id="stat-darts" class="text-7xl font-900">0</div>
-                </div>
-                <div class="glass p-10">
-                    <span class="text-[10px] font-black text-slate-500 uppercase block mb-2 tracking-widest">Punkte Score</span>
-                    <div id="stat-points" class="text-7xl font-900 text-blue-400">0</div>
-                </div>
-                <div class="glass p-10">
-                    <span class="text-[10px] font-black text-slate-500 uppercase block mb-2 tracking-widest">Checkouts</span>
-                    <div id="stat-co" class="text-7xl font-900 text-emerald-400">0</div>
-                </div>
-            </div>
-            <div class="glass p-12 h-64 flex flex-col items-center justify-center text-center">
-                <p class="text-slate-400 text-xl font-medium">Bereit für die nächste Session?</p>
-                <button onclick="showView('lobby')" class="mt-4 text-blue-500 font-black uppercase text-xs tracking-widest">Spiel starten →</button>
-            </div>
-        </div>
-
     </main>
 
     <script>
         let state = {
-            view: 'dash', mode: '', score: 0, mult: 'S', turn: [], target: 0,
-            history: { darts: 0, points: 0, checkouts: 0 },
-            sidebarExpanded: false
+            view: 'dash', mode: '', score: 50, turn: [], 
+            host: '192.168.0.97', port: '3180',
+            socket: null, connected: false
         };
-
-        function toggleSidebar() {
-            state.sidebarExpanded = !state.sidebarExpanded;
-            document.getElementById('mainSidebar').classList.toggle('expanded', state.sidebarExpanded);
-        }
 
         function showView(v) {
             document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
-            const targetView = document.getElementById('view-' + v);
-            if(targetView) targetView.classList.add('active');
-            
-            const nav = document.getElementById('nav-' + v);
-            if(nav) nav.classList.add('active');
-            
+            document.getElementById('view-' + v).classList.add('active');
             state.view = v;
-            // Auto-collapse sidebar on mobile/iPad touch
-            if(window.innerWidth < 1100) {
-                state.sidebarExpanded = false;
-                document.getElementById('mainSidebar').classList.remove('expanded');
+        }
+
+        function toggleSidebar() {
+            document.getElementById('mainSidebar').classList.toggle('expanded');
+        }
+
+        // AUTO-CONNECT BASED ON YOUR STATE.JSON
+        function connectHardware() {
+            const wsUrl = `ws://${state.host}:${state.port}/ws`;
+            updateStatus(false, "Connecting...");
+            
+            if(state.socket) state.socket.close();
+            
+            try {
+                state.socket = new WebSocket(wsUrl);
+                
+                state.socket.onopen = () => {
+                    updateStatus(true, "Board Online");
+                    state.connected = true;
+                };
+                
+                state.socket.onclose = () => {
+                    updateStatus(false, "Offline");
+                    state.connected = false;
+                    // Auto-retry every 5s
+                    setTimeout(connectHardware, 5000);
+                };
+
+                state.socket.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    // Autodarts API mapping
+                    if(data.event === 'dart' || data.event === 'throw') {
+                        handleHardwareHit(data.value, data.multiplier);
+                    }
+                };
+
+                state.socket.onerror = () => updateStatus(false, "Error");
+            } catch(e) {
+                updateStatus(false, "Failed");
             }
         }
 
-        function startGame(m) {
-            state.mode = m; state.turn = [];
-            if(m === 'ladder') state.score = 50;
-            else if(m === 'x01') state.score = 501;
-            else if(m === 'atc') state.target = 1;
-            else state.score = 0;
-            showView('game');
-            render();
+        function updateStatus(online, text) {
+            const dot = document.getElementById('status-dot');
+            const txt = document.getElementById('status-text');
+            dot.className = online ? 'dot online' : 'dot';
+            txt.innerText = text;
         }
 
-        function hit(n) {
-            if(state.turn.length >= 3) return;
-            let val = n; let label = state.mult + n;
-            if(n === 25) { val = (state.mult === 'D') ? 50 : 25; label = (val === 50) ? 'DB' : 'SB'; }
-            else { if(state.mult === 'D') val *= 2; if(state.mult === 'T') val *= 3; }
+        function handleHardwareHit(num, mult) {
+            if(state.view !== 'game' || state.turn.length >= 3) return;
             
-            state.turn.push({ val, label, mult: state.mult, num: n });
-            state.history.darts++; state.history.points += val;
-            setM('S'); 
-            updatePreview();
+            let val = parseInt(num);
+            let mStr = mult === 2 ? 'D' : (mult === 3 ? 'T' : 'S');
+            
+            if(num == 25) {
+                val = (mult === 2) ? 50 : 25;
+                mStr = (mult === 2) ? 'DB' : 'SB';
+            } else {
+                val = val * mult;
+            }
+
+            state.turn.push({ val, label: mStr + num, mult: mStr });
+            updateGameUI();
+        }
+
+        function startGame(m) {
+            state.mode = m; state.score = 50; state.turn = [];
+            showView('game');
+            updateGameUI();
+        }
+
+        function updateGameUI() {
+            document.getElementById('main-display').innerText = state.score;
+            for(let i=1; i<=3; i++) {
+                const e = document.getElementById('d'+i);
+                if(state.turn[i-1]) {
+                    e.innerText = state.turn[i-1].label;
+                    e.classList.replace('text-slate-800', 'text-blue-400');
+                } else {
+                    e.innerText = '---';
+                    e.classList.replace('text-blue-400', 'text-slate-800');
+                }
+            }
         }
 
         function confirmTurn() {
             if(state.turn.length === 0) return;
+            const total = state.turn.reduce((s, d) => s + d.val, 0);
+            const last = state.turn[state.turn.length - 1];
             
             if(state.mode === 'ladder') {
-                let win = state.turn.some(d => (state.score - d.val === 0 && d.mult === 'D'));
-                if(win) { state.score += 5; state.history.checkouts++; } else state.score -= 1;
-            } else if(state.mode === 'atc') {
-                state.turn.forEach(d => { if(d.num === state.target) state.target++; });
-            } else if(state.mode === 'x01') {
-                let turnSum = state.turn.reduce((s, d) => s + d.val, 0);
-                if(state.score - turnSum >= 2 || state.score - turnSum === 0) {
-                    state.score -= turnSum;
-                    if(state.score === 0) state.history.checkouts++;
+                if(state.score - total === 0 && last.mult.includes('D')) {
+                    state.score += 5;
+                } else {
+                    state.score -= 1;
                 }
             }
-            
-            state.turn = []; 
-            updatePreview(); 
-            render(); 
-            updateStatsUI();
+            state.turn = [];
+            updateGameUI();
         }
 
-        function updateStatsUI() {
-            document.getElementById('stat-darts').innerText = state.history.darts;
-            document.getElementById('stat-points').innerText = state.history.points;
-            document.getElementById('stat-co').innerText = state.history.checkouts;
+        function undo() {
+            state.turn.pop();
+            updateGameUI();
         }
 
-        function setM(m) { 
-            state.mult = m; 
-            document.querySelectorAll('[id^="m-"]').forEach(b => b.classList.toggle('active-m', b.id === 'm-'+m)); 
-        }
-
-        function undo() { 
-            const d = state.turn.pop(); 
-            if(d) { state.history.darts--; state.history.points -= d.val; } 
-            updatePreview(); 
-        }
-
-        function updatePreview() {
-            for(let i=1; i<=3; i++) {
-                const e = document.getElementById('d'+i);
-                e.innerText = state.turn[i-1] ? state.turn[i-1].label : '---';
-                e.className = state.turn[i-1] ? 'text-blue-400' : 'text-slate-800';
-            }
-        }
-
-        function render() {
-            const main = document.getElementById('main-display');
-            const sub = document.getElementById('sub-display');
-            const title = document.getElementById('game-title');
-            title.innerText = state.mode.toUpperCase();
-            
-            if(state.mode === 'atc') {
-                main.innerText = state.target;
-                sub.innerText = "Target Number";
-            } else {
-                main.innerText = state.score;
-                sub.innerText = (state.mode === 'ladder' && state.score === 50) ? "10, D20" : "Remaining Score";
-            }
-        }
-
-        function saveCfg() {
-            localStorage.setItem('ad_id', document.getElementById('cfg-id').value);
-            localStorage.setItem('ad_key', document.getElementById('cfg-key').value);
-            // Non-blocking notification UI placeholder
-            const btn = event.target;
-            const originalText = btn.innerText;
-            btn.innerText = "GESPEICHERT!";
-            btn.classList.replace('bg-blue-600', 'bg-emerald-600');
-            setTimeout(() => {
-                btn.innerText = originalText;
-                btn.classList.replace('bg-emerald-600', 'bg-blue-600');
-            }, 2000);
-        }
-
-        window.onload = () => {
-            const sid = localStorage.getItem('ad_id');
-            if(sid) document.getElementById('cfg-id').value = sid;
-        };
+        // Start connection on load
+        window.onload = connectHardware;
     </script>
 </body>
 </html>
