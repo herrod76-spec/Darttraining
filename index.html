@@ -7,247 +7,292 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { 
-            font-family: 'Inter', sans-serif; background: #05070f; color: #f8fafc; 
-            margin: 0; height: 100vh; width: 100vw; overflow: hidden; display: flex;
-        }
+        :root { --accent: #3b82f6; --bg: #05070f; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #f8fafc; margin: 0; height: 100vh; overflow: hidden; display: flex; }
         
-        /* Sidebar */
-        .sidebar { 
-            width: 80px; background: #0d111d; border-right: 1px solid rgba(255,255,255,0.05); 
-            display: flex; flex-direction: column; align-items: center; padding: 1.5rem 0; 
-            z-index: 100; transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
-        }
-        .sidebar.expanded { width: 240px; }
+        /* Layout */
+        .sidebar { width: 80px; background: #0d111d; border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; align-items: center; padding: 1.5rem 0; z-index: 100; }
+        .nav-item { width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; color: #64748b; cursor: pointer; transition: all 0.2s; border-radius: 16px; margin-bottom: 1rem; }
+        .nav-item.active { color: white; background: var(--accent); box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); }
         
-        .nav-item { 
-            width: 100%; padding: 1.25rem 1.75rem; display: flex; align-items: center; 
-            gap: 1.25rem; color: #64748b; cursor: pointer; transition: all 0.2s; 
-            white-space: nowrap; overflow: hidden;
-        }
-        .nav-item.active { color: #3b82f6; border-right: 4px solid #3b82f6; background: rgba(59, 130, 246, 0.1); }
-        .nav-label { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; opacity: 0; transition: opacity 0.2s; }
-        .sidebar.expanded .nav-label { opacity: 1; }
-
-        .content { flex: 1; height: 100vh; overflow-y: auto; background: radial-gradient(circle at top right, #0f172a, #05070f); position: relative; }
-        .view { display: none; padding: 60px 40px; min-height: 100%; }
+        .content { flex: 1; height: 100vh; overflow-y: auto; position: relative; }
+        .view { display: none; padding: 40px; animation: fadeIn 0.2s ease-out; }
         .view.active { display: block; }
         
-        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Status Dot */
-        .status-indicator { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.3); padding: 8px 16px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.05); }
-        .dot { width: 8px; height: 8px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 10px #ef4444; transition: all 0.3s; }
-        .dot.online { background: #10b981; box-shadow: 0 0 10px #10b981; }
-
-        .numpad-btn { background: rgba(30, 41, 59, 0.5); border-radius: 16px; font-weight: 900; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.03); }
+        /* UI Elements */
+        .glass { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #ef4444; }
+        .status-dot.online { background: #10b981; box-shadow: 0 0 10px #10b981; }
+        
+        .card { background: #0d111d; border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 25px; cursor: pointer; transition: 0.3s; }
+        .card:hover { border-color: var(--accent); background: #141a2b; }
+        
+        .score-display { font-size: 10rem; font-weight: 900; line-height: 0.8; letter-spacing: -0.05em; }
+        .dart-box { height: 80px; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 900; border-radius: 15px; background: rgba(255,255,255,0.03); }
+        
+        /* AI Pulse */
+        .ai-glow { animation: pulse-purple 2s infinite; }
+        @keyframes pulse-purple { 0% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(168, 85, 247, 0); } 100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); } }
     </style>
 </head>
 <body>
 
-    <nav class="sidebar" id="mainSidebar">
-        <div class="mb-10 cursor-pointer" onclick="toggleSidebar()">
-            <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center font-900 italic text-xl">HK</div>
-        </div>
-        <div onclick="showView('dash')" id="nav-dash" class="nav-item active"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg><span class="nav-label">Dashboard</span></div>
-        <div onclick="showView('config')" id="nav-config" class="nav-item mt-auto"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span class="nav-label">Setup</span></div>
+    <nav class="sidebar">
+        <div class="mb-10"><div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center font-900 italic text-xl">HK</div></div>
+        <div onclick="showView('lobby')" id="nav-lobby" class="nav-item active"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg></div>
+        <div onclick="showView('training')" id="nav-training" class="nav-item"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+        <div onclick="showView('ai')" id="nav-ai" class="nav-item"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></div>
+        <div onclick="showView('config')" id="nav-config" class="nav-item mt-auto"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
     </nav>
 
     <main class="content">
-        <!-- HEADER MIT STATUS -->
-        <div class="absolute top-10 right-10 z-50">
-            <div class="status-indicator">
-                <div id="status-dot" class="dot"></div>
-                <span id="status-text" class="text-[10px] font-black uppercase tracking-widest text-slate-400">Offline</span>
+        <!-- HEADER -->
+        <div class="p-10 flex justify-between items-center">
+            <div>
+                <h1 id="view-title" class="text-3xl font-900 italic uppercase text-white tracking-tighter">Lobby</h1>
+                <p class="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">HenryKapelly DART OS</p>
+            </div>
+            <div class="flex items-center gap-4 bg-black/40 px-5 py-2 rounded-full border border-white/5">
+                <div id="status-dot" class="status-dot"></div>
+                <span id="status-text" class="text-[9px] font-black uppercase tracking-widest text-slate-400">Suche Board...</span>
             </div>
         </div>
 
-        <!-- VIEW: DASHBOARD -->
-        <div id="view-dash" class="view active">
-            <header class="mb-20">
-                <h1 class="text-7xl font-900 tracking-tighter uppercase text-white mb-2">HenryKapelly</h1>
-                <p class="text-blue-500 text-sm font-black tracking-[0.5em] uppercase">Dart Performance OS</p>
-            </header>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl">
-                <div onclick="startGame('ladder')" class="dash-tile">
-                    <svg width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    <h2 class="text-4xl font-900 mb-2 italic">LADDER 50</h2>
-                    <p class="text-slate-500 text-sm font-medium">Auto-Detection via 192.168.0.97</p>
+        <!-- VIEWS -->
+        <div id="view-lobby" class="view active">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl">
+                <div onclick="startMode('x01', 501)" class="card border-l-4 border-blue-500">
+                    <h3 class="text-2xl font-900 italic text-white uppercase">501</h3>
+                    <p class="text-slate-500 text-xs font-bold mt-1">Double Out | Pro Mode</p>
                 </div>
-                <div onclick="showView('config')" class="dash-tile">
-                    <svg width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
-                    <h2 class="text-4xl font-900 mb-2 italic">SYSTEM</h2>
-                    <p class="text-slate-500 text-sm font-medium italic">Ubuntu 24.04 (Autodarts)</p>
+                <div onclick="startMode('x01', 301)" class="card border-l-4 border-blue-400">
+                    <h3 class="text-2xl font-900 italic text-white uppercase">301</h3>
+                    <p class="text-slate-500 text-xs font-bold mt-1">Fast Game | Double Out</p>
                 </div>
             </div>
         </div>
 
-        <!-- VIEW: GAME INTERFACE -->
+        <div id="view-training" class="view">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl">
+                <div onclick="startMode('ladder')" class="card border-l-4 border-amber-500">
+                    <h3 class="text-2xl font-900 italic text-white uppercase">Ladder 50</h3>
+                    <p class="text-slate-500 text-xs font-bold mt-1">Checkout Mastery (+5 / -1)</p>
+                </div>
+                <div onclick="startMode('bobs27')" class="card border-l-4 border-rose-500">
+                    <h3 class="text-2xl font-900 italic text-white uppercase">Bob's 27</h3>
+                    <p class="text-slate-500 text-xs font-bold mt-1">Double Training Training</p>
+                </div>
+                <div onclick="startMode('atc')" class="card border-l-4 border-emerald-500">
+                    <h3 class="text-2xl font-900 italic text-white uppercase">A.T.C.</h3>
+                    <p class="text-slate-500 text-xs font-bold mt-1">Around the Clock | 1-Bull</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-ai" class="view">
+            <div class="max-w-3xl space-y-6">
+                <div class="glass p-8 border-l-4 border-purple-500 ai-glow">
+                    <h2 class="text-xl font-900 italic uppercase mb-2">Pädagogische KI-Analyse</h2>
+                    <p class="text-slate-400 text-xs mb-6">Gemini wertet deine Wurf-Psychologie aus.</p>
+                    <button onclick="runAI()" id="ai-btn" class="bg-purple-600 px-6 py-3 rounded-xl font-900 text-[10px] uppercase tracking-widest hover:bg-purple-500 transition-all">Analyse generieren</button>
+                </div>
+                <div id="ai-box" class="glass p-8 hidden text-slate-300 italic leading-relaxed text-sm">
+                    <!-- KI Content -->
+                </div>
+            </div>
+        </div>
+
         <div id="view-game" class="view">
-            <div class="grid grid-cols-12 gap-8 max-w-7xl mx-auto h-[80vh]">
-                <div class="col-span-6 flex flex-col">
-                    <div class="glass flex-1 flex flex-col items-center justify-center relative">
-                        <div id="game-title" class="absolute top-10 text-[10px] font-black text-blue-500 uppercase tracking-[0.8em]">LADDER 50</div>
-                        <div id="main-display" class="text-[200px] font-900 leading-none text-white tracking-tighter">50</div>
-                        <div id="sub-display" class="mt-4 text-slate-400 font-black text-3xl uppercase tracking-widest">Target Checkout</div>
-                    </div>
+            <div class="grid grid-cols-12 gap-8 h-[65vh]">
+                <div class="col-span-7 glass flex flex-col items-center justify-center relative">
+                    <div id="mode-info" class="absolute top-8 text-blue-500 font-black text-[10px] uppercase tracking-[0.6em]">MODE</div>
+                    <div id="main-score" class="score-display text-white">501</div>
+                    <div id="target-info" class="mt-6 text-slate-500 font-black text-xl uppercase tracking-widest">---</div>
                 </div>
-                <div class="col-span-6 flex flex-col gap-4">
-                    <div class="grid grid-cols-3 gap-3 h-24">
-                        <div id="d1" class="glass flex items-center justify-center text-4xl font-900 text-slate-800">---</div>
-                        <div id="d2" class="glass flex items-center justify-center text-4xl font-900 text-slate-800">---</div>
-                        <div id="d3" class="glass flex items-center justify-center text-4xl font-900 text-slate-800">---</div>
+                <div class="col-span-5 flex flex-col gap-4">
+                    <div class="grid grid-cols-3 gap-3">
+                        <div id="d-1" class="dart-box text-slate-800">--</div>
+                        <div id="d-2" class="dart-box text-slate-800">--</div>
+                        <div id="d-3" class="dart-box text-slate-800">--</div>
                     </div>
-                    <div class="flex-1 glass p-8 flex flex-col items-center justify-center text-center">
-                        <div id="detection-info" class="mb-6">
-                            <p class="text-blue-500 font-black uppercase text-xs tracking-widest">Warte auf Dart-Erkennung...</p>
-                            <p class="text-slate-600 text-[10px] mt-1 italic">Connected to autodarts (192.168.0.97:3180)</p>
-                        </div>
-                        <div class="flex gap-4">
-                            <button onclick="confirmTurn()" class="px-10 py-6 bg-blue-600 rounded-2xl font-900 text-2xl shadow-xl hover:bg-blue-500 transition-all">NEXT ROUND</button>
-                            <button onclick="undo()" class="px-8 py-6 bg-slate-800 rounded-2xl font-900 text-sm uppercase">Undo</button>
+                    <div class="flex-1 glass p-6 flex flex-col justify-between">
+                        <div class="text-center text-[10px] font-black text-slate-600 uppercase">AWO Wesel Performance Tracker</div>
+                        <div class="space-y-3">
+                            <button onclick="nextTurn()" class="w-full bg-blue-600 py-8 rounded-3xl font-900 text-3xl shadow-xl active:scale-95 transition-all">NEXT</button>
+                            <button onclick="undo()" class="w-full py-3 text-slate-500 font-black text-[10px] uppercase tracking-widest">Undo Dart</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- VIEW: CONFIG -->
         <div id="view-config" class="view">
-            <button onclick="showView('dash')" class="mb-12 text-blue-500 font-black uppercase text-xs tracking-widest">← Back</button>
-            <div class="max-w-2xl glass p-12">
-                <h2 class="text-4xl font-900 mb-8 italic uppercase tracking-tighter">System Info</h2>
-                <div class="space-y-4 text-sm font-bold uppercase tracking-wider">
-                    <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-slate-500">Host IP</span><span class="text-blue-400">192.168.0.97</span></div>
-                    <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-slate-500">Platform</span><span class="text-white">Ubuntu 24.04</span></div>
-                    <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-slate-500">API Port</span><span class="text-white">3180 / 3181</span></div>
-                    <div class="flex justify-between border-b border-white/5 pb-2"><span class="text-slate-500">Cams</span><span class="text-emerald-500">3 Online</span></div>
+            <div class="glass p-8 max-w-xl">
+                <h2 class="text-xl font-900 italic mb-4 uppercase">System Control</h2>
+                <div class="grid grid-cols-2 gap-4 text-[11px] font-bold uppercase mb-8">
+                    <div class="p-3 bg-black/20 rounded-lg"><span class="text-slate-500 block">Host</span> 192.168.0.97</div>
+                    <div class="p-3 bg-black/20 rounded-lg"><span class="text-slate-500 block">Port</span> 3180</div>
+                    <div class="p-3 bg-black/20 rounded-lg"><span class="text-slate-500 block">OS</span> Ubuntu 24.04</div>
+                    <div id="con-status" class="p-3 bg-rose-900/20 text-rose-500 rounded-lg"><span class="text-slate-500 block">Status</span> Disconnected</div>
                 </div>
-                <button onclick="connectHardware()" class="w-full mt-10 bg-blue-600 py-5 rounded-xl font-900 uppercase text-xs tracking-widest">Reconnect WebSocket</button>
+                <button onclick="tryConnect()" class="w-full bg-white/5 py-4 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-white/10">Initialisiere WebSocket</button>
             </div>
         </div>
     </main>
 
     <script>
-        let state = {
-            view: 'dash', mode: '', score: 50, turn: [], 
-            host: '192.168.0.97', port: '3180',
-            socket: null, connected: false
-        };
+        const apiKey = "";
+        let sessionData = [];
+        let state = { mode: '', score: 501, turn: [], atcTarget: 1 };
+        let socket;
 
         function showView(v) {
             document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
             document.getElementById('view-' + v).classList.add('active');
-            state.view = v;
+            document.getElementById('nav-' + v)?.classList.add('active');
+            document.getElementById('view-title').innerText = v.toUpperCase();
         }
 
-        function toggleSidebar() {
-            document.getElementById('mainSidebar').classList.toggle('expanded');
-        }
-
-        // AUTO-CONNECT BASED ON YOUR STATE.JSON
-        function connectHardware() {
-            const wsUrl = `ws://${state.host}:${state.port}/ws`;
-            updateStatus(false, "Connecting...");
+        // AUTODARTS IMPLEMENTATION (DEBUGGED)
+        function tryConnect() {
+            // Wir versuchen verschiedene Endpunkte, da Autodarts Vision oft auf /ws oder /api/events reagiert
+            const endpoints = [
+                `ws://192.168.0.97:3180/ws`,
+                `ws://192.168.0.97:3180/api/events`
+            ];
             
-            if(state.socket) state.socket.close();
+            updateStatus(false, "Verbinde...");
             
-            try {
-                state.socket = new WebSocket(wsUrl);
-                
-                state.socket.onopen = () => {
-                    updateStatus(true, "Board Online");
-                    state.connected = true;
-                };
-                
-                state.socket.onclose = () => {
-                    updateStatus(false, "Offline");
-                    state.connected = false;
-                    // Auto-retry every 5s
-                    setTimeout(connectHardware, 5000);
-                };
+            if(socket) socket.close();
 
-                state.socket.onmessage = (event) => {
+            // Wir nehmen den Standardpfad für Autodarts Vision
+            socket = new WebSocket(endpoints[0]);
+
+            socket.onopen = () => {
+                updateStatus(true, "Board Online");
+                document.getElementById('con-status').innerText = "CONNECTED";
+                document.getElementById('con-status').classList.replace('text-rose-500', 'text-emerald-500');
+            };
+
+            socket.onmessage = (event) => {
+                try {
                     const data = JSON.parse(event.data);
-                    // Autodarts API mapping
-                    if(data.event === 'dart' || data.event === 'throw') {
-                        handleHardwareHit(data.value, data.multiplier);
+                    // Wir lauschen auf 'dart' oder 'throw' Events von der Autodarts API
+                    if(data.event === 'dart' || data.event === 'throw' || data.type === 'dart') {
+                        const val = data.value || data.points;
+                        const mult = data.multiplier || 1;
+                        registerDart(val, mult);
                     }
-                };
+                } catch(e) { console.error("Data Parse Error", e); }
+            };
 
-                state.socket.onerror = () => updateStatus(false, "Error");
-            } catch(e) {
-                updateStatus(false, "Failed");
-            }
+            socket.onclose = () => {
+                updateStatus(false, "Offline");
+                setTimeout(tryConnect, 10000);
+            };
         }
 
-        function updateStatus(online, text) {
-            const dot = document.getElementById('status-dot');
-            const txt = document.getElementById('status-text');
-            dot.className = online ? 'dot online' : 'dot';
-            txt.innerText = text;
+        function updateStatus(online, txt) {
+            document.getElementById('status-dot').className = online ? 'status-dot online' : 'status-dot';
+            document.getElementById('status-text').innerText = txt;
         }
 
-        function handleHardwareHit(num, mult) {
-            if(state.view !== 'game' || state.turn.length >= 3) return;
-            
-            let val = parseInt(num);
-            let mStr = mult === 2 ? 'D' : (mult === 3 ? 'T' : 'S');
-            
-            if(num == 25) {
-                val = (mult === 2) ? 50 : 25;
-                mStr = (mult === 2) ? 'DB' : 'SB';
-            } else {
-                val = val * mult;
-            }
-
-            state.turn.push({ val, label: mStr + num, mult: mStr });
-            updateGameUI();
-        }
-
-        function startGame(m) {
-            state.mode = m; state.score = 50; state.turn = [];
-            showView('game');
-            updateGameUI();
-        }
-
-        function updateGameUI() {
-            document.getElementById('main-display').innerText = state.score;
-            for(let i=1; i<=3; i++) {
-                const e = document.getElementById('d'+i);
-                if(state.turn[i-1]) {
-                    e.innerText = state.turn[i-1].label;
-                    e.classList.replace('text-slate-800', 'text-blue-400');
-                } else {
-                    e.innerText = '---';
-                    e.classList.replace('text-blue-400', 'text-slate-800');
-                }
-            }
-        }
-
-        function confirmTurn() {
-            if(state.turn.length === 0) return;
-            const total = state.turn.reduce((s, d) => s + d.val, 0);
-            const last = state.turn[state.turn.length - 1];
-            
-            if(state.mode === 'ladder') {
-                if(state.score - total === 0 && last.mult.includes('D')) {
-                    state.score += 5;
-                } else {
-                    state.score -= 1;
-                }
-            }
+        function startMode(m, s) {
+            state.mode = m;
+            state.score = s || 0;
             state.turn = [];
-            updateGameUI();
+            state.atcTarget = 1;
+            
+            if(m === 'ladder') state.score = 50;
+            if(m === 'bobs27') state.score = 27;
+            
+            document.getElementById('mode-info').innerText = m.toUpperCase();
+            showView('game');
+            updateUI();
         }
 
-        function undo() {
-            state.turn.pop();
-            updateGameUI();
+        function registerDart(val, mult) {
+            if(state.turn.length >= 3) return;
+            
+            let p = parseInt(val);
+            let label = (mult === 2 ? 'D' : (mult === 3 ? 'T' : 'S')) + val;
+            
+            if(val == 25) {
+                p = (mult === 2) ? 50 : 25;
+                label = (mult === 2) ? 'DB' : 'SB';
+            } else { p *= mult; }
+
+            state.turn.push({ p, label, mult });
+            updateUI();
         }
 
-        // Start connection on load
-        window.onload = connectHardware;
+        function updateUI() {
+            const scoreEl = document.getElementById('main-score');
+            const infoEl = document.getElementById('target-info');
+            
+            if(state.mode === 'atc') {
+                scoreEl.innerText = state.atcTarget;
+                infoEl.innerText = "Target hit?";
+            } else {
+                scoreEl.innerText = state.score - state.turn.reduce((a,b)=>a+b.p, 0);
+                infoEl.innerText = "Darts: " + state.turn.length;
+            }
+
+            for(let i=1; i<=3; i++) {
+                const el = document.getElementById('d-'+i);
+                const d = state.turn[i-1];
+                el.innerText = d ? d.label : '--';
+                el.style.color = d ? '#3b82f6' : '#1e293b';
+            }
+        }
+
+        function nextTurn() {
+            const sum = state.turn.reduce((a,b)=>a+b.p, 0);
+            
+            if(state.mode === 'x01') {
+                state.score -= sum;
+            } else if(state.mode === 'ladder') {
+                const last = state.turn[state.turn.length - 1];
+                if(state.score - sum === 0 && last?.mult === 2) state.score += 5;
+                else state.score -= 1;
+            } else if(state.mode === 'atc') {
+                if(state.turn.some(d => d.p === state.atcTarget)) state.atcTarget++;
+            }
+
+            sessionData.push(...state.turn);
+            state.turn = [];
+            updateUI();
+        }
+
+        function undo() { state.turn.pop(); updateUI(); }
+
+        // KI ANALYSE (GEMINI)
+        async function runAI() {
+            if(sessionData.length < 3) return alert("Sammle erst Daten!");
+            const box = document.getElementById('ai-box');
+            box.classList.remove('hidden');
+            box.innerText = "Analysiere Wurfkurve...";
+
+            const prompt = `Analysiere diese Dart-Session: ${JSON.stringify(sessionData)}. 
+            Der Nutzer ist HenryKapelly, Diplom-Sozialpädagoge bei der AWO. 
+            Gib eine kurze, ehrliche, psychologisch fundierte Analyse seines Spiels. 
+            Halte es kurz (3-4 Sätze).`;
+
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const d = await res.json();
+                box.innerText = d.candidates[0].content.parts[0].text;
+            } catch(e) { box.innerText = "KI offline."; }
+        }
+
+        window.onload = tryConnect;
     </script>
 </body>
 </html>
