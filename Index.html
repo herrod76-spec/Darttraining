@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -6,117 +6,142 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>DARTPRO M5</title>
+    <title>DARTPRO M5 ELITE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
-        :root { --bg: #030712; --card: #0f172a; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap');
+        :root { --bg: #030712; --card: #0f172a; --accent: #3b82f6; }
         body { 
             font-family: 'Inter', sans-serif; 
             background: var(--bg); 
             color: #f8fafc; 
-            margin: 0; 
             height: 100vh; 
             overflow: hidden; 
+            margin: 0; 
         }
-        .glass-card { background: #0f172a; border: 1px solid rgba(255,255,255,0.05); border-radius: 40px; }
-        .btn-game { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
-        .btn-game:active { transform: scale(0.96); opacity: 0.8; }
-        .cricket-box { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.1); border-radius: 6px; }
+        
+        .glass-card { 
+            background: #0f172a; 
+            border: 1px solid rgba(255,255,255,0.05); 
+            border-radius: 40px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        
+        .btn-game { 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            cursor: pointer; 
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-game:active { transform: scale(0.95); }
+        .btn-game:hover { border-color: rgba(59, 130, 246, 0.5); background: #1e293b; }
+        
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 10px #ef4444; }
+        .connected .status-dot { background: #10b981; box-shadow: 0 0 15px #10b981; }
+
+        .cricket-box { width: 22px; height: 22px; border: 2px solid rgba(255,255,255,0.1); border-radius: 6px; }
         .cricket-box.filled { background: #3b82f6; border-color: #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #ef4444; }
-        .connected .status-dot { background: #10b981; box-shadow: 0 0 10px #10b981; }
+        
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="flex flex-col">
+<body class="flex flex-col h-full">
 
-    <header class="p-10 flex justify-between items-center">
-        <div class="flex gap-4 items-center">
-            <div class="text-blue-500 font-900 text-3xl tracking-tighter">DARTPRO</div>
-            <div class="h-8 w-px bg-white/10 mx-2"></div>
-            <div class="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em] leading-tight">IPAD ELITE<br>TRAINING M5</div>
+    <!-- HEADER -->
+    <header class="p-12 flex justify-between items-start">
+        <div class="flex gap-5 items-center">
+            <div class="text-blue-500 font-900 text-4xl tracking-tighter">DARTPRO</div>
+            <div class="h-10 w-px bg-white/10 mx-2"></div>
+            <div class="text-slate-500 text-[11px] font-black uppercase tracking-[0.4em] leading-tight">M5 PROFESSIONAL<br>TRAINING SUITE</div>
         </div>
-        <div id="global-status" class="flex items-center bg-white/5 px-6 py-2 rounded-full border border-white/5">
-            <div class="status-dot mr-3"></div> 
-            <span class="text-[9px] font-black uppercase opacity-60 tracking-widest">Autodarts Offline</span>
+        <div id="global-status" class="flex items-center bg-white/5 px-8 py-3 rounded-full border border-white/5">
+            <div class="status-dot mr-4"></div> 
+            <span class="text-[10px] font-black uppercase opacity-60 tracking-widest">Autodarts Offline</span>
         </div>
     </header>
 
-    <!-- MENU VIEW -->
-    <main id="view-menu" class="flex-1 px-10 space-y-12 overflow-y-auto pb-20">
+    <!-- VIEW: MENU -->
+    <main id="view-menu" class="flex-1 px-12 overflow-y-auto space-y-12 pb-24">
+        <!-- PLAYER CONFIG -->
         <div class="glass-card p-10 max-w-4xl">
-            <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-8">Spieler Setup</h3>
-            <div class="flex gap-4 mb-8" id="pc-btns"></div>
-            <div id="pn-inputs" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] mb-8">Spieler Setup</h3>
+            <div class="flex gap-5 mb-10" id="pc-btns"></div>
+            <div id="pn-inputs" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl">
-            <div onclick="initGame('501')" class="glass-card btn-game p-10 h-64 flex flex-col justify-end border-l-8 border-blue-600">
-                <span class="text-4xl font-900">501 Match</span>
-                <span class="text-xs text-slate-500 font-bold uppercase mt-2 tracking-widest">Klassisch</span>
+        <!-- GAMES GRID -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl">
+            <div onclick="initGame('501')" class="glass-card btn-game p-12 h-72 flex flex-col justify-end border-l-[12px] border-blue-600">
+                <span class="text-5xl font-900 tracking-tighter">501</span>
+                <span class="text-sm text-slate-400 font-bold uppercase mt-3 tracking-widest">Match Modus</span>
             </div>
-            <div onclick="initGame('cricket')" class="glass-card btn-game p-10 h-64 flex flex-col justify-end border-l-8 border-emerald-600">
-                <span class="text-4xl font-900 text-emerald-400">Cricket</span>
-                <span class="text-xs text-slate-500 font-bold uppercase mt-2 tracking-widest">Tactical</span>
+            <div onclick="initGame('cricket')" class="glass-card btn-game p-12 h-72 flex flex-col justify-end border-l-[12px] border-emerald-500">
+                <span class="text-5xl font-900 text-emerald-400 tracking-tighter">CRICKET</span>
+                <span class="text-sm text-slate-400 font-bold uppercase mt-3 tracking-widest">Tactical Progress</span>
             </div>
-            <div onclick="initGame('ladder50')" class="glass-card btn-game p-10 h-64 flex flex-col justify-end border-l-8 border-indigo-600">
-                <span class="text-4xl font-900 text-indigo-400">Ladder 50</span>
-                <span class="text-xs text-slate-500 font-bold uppercase mt-2 tracking-widest">Peak Training</span>
+            <div onclick="initGame('ladder50')" class="glass-card btn-game p-12 h-72 flex flex-col justify-end border-l-[12px] border-indigo-600">
+                <span class="text-5xl font-900 text-indigo-400 tracking-tighter">LADDER 50</span>
+                <span class="text-sm text-slate-400 font-bold uppercase mt-3 tracking-widest">Peak Training</span>
             </div>
-            <div onclick="initGame('jdc')" class="glass-card btn-game p-10 h-64 flex flex-col justify-end border-l-8 border-amber-600">
-                <span class="text-4xl font-900 text-amber-500">JDC Challenge</span>
-                <span class="text-xs text-slate-500 font-bold uppercase mt-2 tracking-widest">Score Training</span>
+            <div onclick="initGame('jdc')" class="glass-card btn-game p-12 h-72 flex flex-col justify-end border-l-[12px] border-amber-500">
+                <span class="text-5xl font-900 text-amber-500 tracking-tighter">JDC</span>
+                <span class="text-sm text-slate-400 font-bold uppercase mt-3 tracking-widest">Challenge Mode</span>
             </div>
-            <div onclick="initGame('bob27')" class="glass-card btn-game p-10 h-64 flex flex-col justify-end border-l-8 border-rose-600">
-                <span class="text-4xl font-900 text-rose-500">Bob's 27</span>
-                <span class="text-xs text-slate-500 font-bold uppercase mt-2 tracking-widest">Doubles Only</span>
+            <div onclick="initGame('bob27')" class="glass-card btn-game p-12 h-72 flex flex-col justify-end border-l-[12px] border-rose-600">
+                <span class="text-5xl font-900 text-rose-500 tracking-tighter">BOB'S 27</span>
+                <span class="text-sm text-slate-400 font-bold uppercase mt-3 tracking-widest">Survival Training</span>
             </div>
-            <div onclick="showView('settings')" class="glass-card btn-game p-10 h-64 flex flex-col items-center justify-center border border-dashed border-white/10 opacity-40">
-                <svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg>
-                <span class="text-[9px] font-black uppercase tracking-widest">Settings</span>
+            <div onclick="showSettings()" class="glass-card btn-game p-12 h-72 flex flex-col items-center justify-center border border-dashed border-white/10 opacity-30">
+                <svg class="w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                <span class="text-[10px] font-black uppercase tracking-widest">System Settings</span>
             </div>
         </div>
     </main>
 
-    <!-- GAME VIEW -->
-    <main id="view-game" class="hidden flex-1 px-10 space-y-10 overflow-y-auto pb-10">
+    <!-- VIEW: GAME -->
+    <main id="view-game" class="hidden flex-1 px-12 overflow-y-auto space-y-10 pb-20">
         <div class="flex justify-between items-center">
-            <button onclick="showView('menu')" class="bg-slate-800 px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all">← Menü</button>
-            <div id="game-tag" class="text-blue-500 font-black uppercase tracking-[0.4em] text-[10px] bg-blue-500/10 px-4 py-2 rounded-full border border-blue-500/20">501 MATCH</div>
+            <button onclick="location.reload()" class="bg-slate-800/50 border border-white/5 px-10 py-4 rounded-3xl text-[11px] font-black uppercase tracking-widest transition-all hover:bg-slate-700">← Hauptmenü</button>
+            <div id="game-tag" class="text-blue-500 font-black uppercase tracking-[0.5em] text-[11px] bg-blue-500/10 px-6 py-3 rounded-full border border-blue-500/20 shadow-[0_0_20px_rgba(59,130,246,0.2)]">LADDER 50</div>
         </div>
 
-        <div class="text-center space-y-2">
-            <h2 id="ui-player" class="text-5xl font-900 tracking-tight">Ich</h2>
-            <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Ist an der Reihe</p>
+        <div class="text-center space-y-3">
+            <h2 id="ui-player" class="text-6xl font-900 tracking-tighter">Ich</h2>
+            <p class="text-[11px] font-black text-slate-500 uppercase tracking-[0.4em]">An der Reihe</p>
         </div>
 
-        <div class="max-w-4xl mx-auto space-y-10">
-            <div class="glass-card p-16 text-center shadow-2xl relative overflow-hidden">
-                <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">Rest / Ziel</div>
-                <div id="ui-main" class="text-[180px] font-900 tracking-tighter leading-none">501</div>
-                <div id="ui-helper-container" class="mt-8">
-                    <div id="ui-helper" class="bg-blue-500/10 text-blue-400 py-5 px-12 rounded-3xl font-black text-3xl inline-block border border-blue-500/20">Scoring</div>
+        <div class="max-w-5xl mx-auto space-y-12">
+            <!-- SCORE DISPLAY -->
+            <div class="glass-card p-20 text-center relative overflow-hidden">
+                <div class="text-[11px] font-black text-slate-500 uppercase tracking-[0.3em] mb-6">Rest / Ziel</div>
+                <div id="ui-main" class="text-[220px] font-900 tracking-tighter leading-none">0</div>
+                <div id="ui-helper-container" class="mt-12">
+                    <div id="ui-helper" class="bg-blue-500/10 border border-blue-500/20 text-blue-400 py-6 px-16 rounded-[40px] font-black text-4xl inline-block shadow-2xl">S26 - D16</div>
                 </div>
             </div>
 
-            <div id="input-area" class="grid grid-cols-1 gap-6"></div>
+            <!-- INPUTS -->
+            <div id="input-area" class="grid grid-cols-1 gap-8"></div>
 
-            <div class="grid grid-cols-3 gap-4">
-                <div class="glass-card p-6 text-center">
-                    <div class="text-[9px] font-black text-slate-500 uppercase mb-1">Peak</div>
-                    <div id="st-high" class="text-2xl font-900">0</div>
+            <!-- CRICKET GRID -->
+            <div id="cricket-grid" class="hidden grid grid-cols-1 gap-4"></div>
+
+            <!-- STATS -->
+            <div class="grid grid-cols-3 gap-6">
+                <div class="glass-card p-8 text-center">
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Peak</div>
+                    <div id="st-high" class="text-3xl font-900 text-blue-400">58</div>
                 </div>
-                <div class="glass-card p-6 text-center">
-                    <div class="text-[9px] font-black text-slate-500 uppercase mb-1">Runden</div>
-                    <div id="st-rounds" class="text-2xl font-900">0</div>
+                <div class="glass-card p-8 text-center">
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Runden</div>
+                    <div id="st-rounds" class="text-3xl font-900">4</div>
                 </div>
-                <div class="glass-card p-6 text-center">
-                    <div class="text-[9px] font-black text-slate-500 uppercase mb-1">Avg/Acc</div>
-                    <div id="st-acc" class="text-2xl font-900">0%</div>
+                <div class="glass-card p-8 text-center">
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Checkout %</div>
+                    <div id="st-acc" class="text-3xl font-900">50%</div>
                 </div>
             </div>
         </div>
-        <div id="cricket-grid" class="hidden max-w-2xl mx-auto grid grid-cols-1 gap-3 pb-20"></div>
     </main>
 
     <script>
@@ -130,12 +155,12 @@
 
         function initSetup() {
             let hP = "";
-            for(let i=1; i<=4; i++) hP += `<button onclick="setPC(${i})" class="w-14 h-14 rounded-2xl font-black text-xl transition-all ${i===app.numP?'bg-blue-600 text-white shadow-xl shadow-blue-600/30':'bg-slate-800 text-slate-500'}">${i}</button>`;
+            for(let i=1; i<=4; i++) hP += `<button onclick="setPC(${i})" class="w-16 h-16 rounded-[24px] font-black text-2xl transition-all ${i===app.numP?'bg-blue-600 text-white shadow-[0_0_30px_rgba(59,130,246,0.4)]':'bg-slate-800 text-slate-500'}">${i}</button>`;
             $('pc-btns').innerHTML = hP;
             let hI = "";
             for(let i=0; i<app.numP; i++) {
                 if(!app.players[i]) app.players[i] = "Spieler " + (i+1);
-                hI += `<input type="text" value="${app.players[i]}" oninput="app.players[${i}]=this.value" class="bg-slate-900 p-5 rounded-2xl outline-none focus:ring-2 ring-blue-500 font-bold border border-white/5">`;
+                hI += `<input type="text" value="${app.players[i]}" oninput="app.players[${i}]=this.value" class="bg-slate-900/80 p-6 rounded-[24px] outline-none focus:ring-4 ring-blue-500/20 font-bold border border-white/5 text-xl">`;
             }
             $('pn-inputs').innerHTML = hI;
         }
@@ -162,66 +187,77 @@
             $('game-tag').innerText = m.toUpperCase();
             $('ui-player').innerText = app.players[p];
             $('ui-main').innerText = sc;
+            
             let area = $('input-area');
             let grid = $('cricket-grid');
-            let helper = $('ui-helper-container');
+            let helperContainer = $('ui-helper-container');
             grid.classList.add('hidden');
-            helper.classList.remove('hidden');
+            helperContainer.classList.remove('hidden');
 
             if(m === '501') {
                 $('ui-helper').innerText = sc <= 170 ? "Finish: " + sc : "Scoring";
-                area.innerHTML = `<input type="number" id="val" class="bg-slate-900 p-10 rounded-[40px] text-7xl font-900 text-center outline-none w-full border-2 border-white/5 focus:border-blue-500/50" placeholder="0" autofocus>
-                                  <button onclick="do501()" class="bg-blue-600 py-8 rounded-[40px] font-900 text-2xl uppercase w-full shadow-2xl">Score Senden</button>`;
+                area.innerHTML = `
+                    <div class="flex flex-col gap-6">
+                        <input type="number" id="val" class="bg-slate-900 p-12 rounded-[40px] text-8xl font-900 text-center outline-none w-full border-4 border-white/5 focus:border-blue-500/50 shadow-inner" placeholder="0" autofocus>
+                        <button onclick="do501()" class="bg-blue-600 py-10 rounded-[40px] font-900 text-3xl uppercase w-full shadow-[0_20px_50px_rgba(59,130,246,0.3)] btn-game">Score Senden</button>
+                    </div>`;
             } else if(m === 'ladder50') {
-                $('ui-helper').innerText = "Target: D" + (sc/2);
-                area.innerHTML = `<div class="grid grid-cols-2 gap-6 h-44">
-                    <button onclick="doLadder(true)" class="bg-[#46956b] rounded-[40px] font-900 text-3xl uppercase text-white btn-game shadow-xl">Checkout</button>
-                    <button onclick="doLadder(false)" class="bg-[#c24652] rounded-[40px] font-900 text-3xl uppercase text-white btn-game shadow-xl">Miss</button>
+                $('ui-helper').innerText = "Ziel: D" + (sc/2);
+                area.innerHTML = `<div class="grid grid-cols-2 gap-8 h-56">
+                    <button onclick="doLadder(true)" class="bg-[#10b981] rounded-[50px] font-900 text-4xl uppercase text-white btn-game shadow-2xl">Checkout</button>
+                    <button onclick="doLadder(false)" class="bg-[#ef4444] rounded-[50px] font-900 text-4xl uppercase text-white btn-game shadow-2xl">Miss</button>
                 </div>`;
             } else if(m === 'cricket') {
                 grid.classList.remove('hidden');
-                helper.classList.add('hidden');
+                helperContainer.classList.add('hidden');
                 let hG = "";
                 app.logic.nums.forEach(n => {
                     const hits = app.logic.state[p][n];
-                    hG += `<div class="flex items-center justify-between p-5 glass-card ${hits>=3?'opacity-30':''}">
-                        <span class="font-900 text-3xl w-24">${n===25?'BULL':n}</span>
-                        <div class="flex gap-4" onclick="hitCricket(${n})">
+                    hG += `<div class="flex items-center justify-between p-6 glass-card ${hits>=3?'opacity-20':''}">
+                        <span class="font-900 text-4xl w-32 tracking-tighter">${n===25?'BULL':n}</span>
+                        <div class="flex gap-6" onclick="hitCricket(${n})">
                             <div class="cricket-box ${hits>=1?'filled':''}"></div>
                             <div class="cricket-box ${hits>=2?'filled':''}"></div>
                             <div class="cricket-box ${hits>=3?'filled':''}"></div>
                         </div>
-                        <button onclick="hitCricket(${n})" class="bg-blue-600/20 w-16 h-16 rounded-2xl font-black text-blue-400">+</button>
+                        <button onclick="hitCricket(${n})" class="bg-blue-600/10 w-20 h-20 rounded-3xl font-black text-blue-400 text-3xl">+</button>
                     </div>`;
                 });
                 grid.innerHTML = hG;
-                area.innerHTML = `<button onclick="nextRound()" class="bg-blue-600 py-8 rounded-[40px] font-900 text-2xl uppercase w-full">Nächste Runde</button>`;
+                area.innerHTML = `<button onclick="nextRound()" class="bg-blue-600 py-10 rounded-[40px] font-900 text-3xl uppercase w-full">Nächste Runde</button>`;
             }
+
             $('st-high').innerText = app.stats[p].peak || 0;
             $('st-rounds').innerText = app.stats[p].r;
-            $('st-acc').innerText = m === 'ladder50' ? (app.stats[p].r > 0 ? Math.round((app.stats[p].h/app.stats[p].r)*100) + "%" : "0%") : "0";
+            $('st-acc').innerText = app.mode === 'ladder50' ? (app.stats[p].r > 0 ? Math.round((app.stats[p].h/app.stats[p].r)*100) + "%" : "0%") : "0%";
         }
 
         function do501() {
             const v = parseInt($('val').value) || 0;
             if(app.scores[app.curP] - v >= 0) app.scores[app.curP] -= v;
-            if(app.scores[app.curP] === 0) { alert("Sieg!"); showView('menu'); }
+            if(app.scores[app.curP] === 0) { alert("Sieg!"); location.reload(); }
             else nextRound();
         }
 
         function doLadder(win) {
-            if(win) { app.scores[app.curP] += 5; app.stats[app.curP].h++; if(app.scores[app.curP] > app.stats[app.curP].peak) app.stats[app.curP].peak = app.scores[app.curP]; }
-            else { app.scores[app.curP] = Math.max(2, app.scores[app.curP] - 1); }
+            if(win) { 
+                app.scores[app.curP] += 5; 
+                app.stats[app.curP].h++;
+                if(app.scores[app.curP] > app.stats[app.curP].peak) app.stats[app.curP].peak = app.scores[app.curP];
+            } else { 
+                app.scores[app.curP] = Math.max(2, app.scores[app.curP] - 1); 
+            }
             nextRound();
         }
 
         function hitCricket(n) {
             if(app.logic.state[app.curP][n] < 3) app.logic.state[app.curP][n]++;
-            else { if(!app.logic.state.every(s => s[n] >= 3)) app.scores[app.curP] += n; }
             updateUI();
         }
 
-        function nextRound() { app.stats[app.curP].r++; app.curP = (app.curP + 1) % app.numP; updateUI(); }
+        function nextRound() {
+            app.stats[app.curP].r++; app.curP = (app.curP + 1) % app.numP; updateUI();
+        }
 
         initSetup();
     </script>
@@ -229,4 +265,3 @@
 </html>
 
 ```
-
